@@ -18,7 +18,7 @@ typedef struct{
     int dim;
 } tArgs;
 
-//funcao a ser realizada pelas threads
+// funcao a ser realizada pelas threads
 void * tarefa(void *arg){
     int i, j, k;
     tArgs *args = (tArgs *) arg;
@@ -32,7 +32,7 @@ void * tarefa(void *arg){
     pthread_exit(NULL);
 }
 
-//funcao para printar as matrizes e conferir se a conta foi realizada corretamente
+// funcao para printar as matrizes e conferir se a conta foi realizada corretamente
 void mostraMatriz(float *matriz, int dim){
     int i;
     for(i = 0; i < dim * dim; i++){
