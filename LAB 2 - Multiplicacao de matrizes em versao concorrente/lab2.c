@@ -18,6 +18,7 @@ typedef struct{
     int dim;
 } tArgs;
 
+//funcao a ser realizada pelas threads
 void * tarefa(void *arg){
     int i, j, k;
     tArgs *args = (tArgs *) arg;
@@ -31,6 +32,7 @@ void * tarefa(void *arg){
     pthread_exit(NULL);
 }
 
+//funcao para printar as matrizes e conferir se a conta foi realizada corretamente
 void mostraMatriz(float *matriz, int dim){
     int i;
     for(i = 0; i < dim * dim; i++){
@@ -47,7 +49,8 @@ int main(int argc, char* argv[]){
     double inicio, fim, delta, total = 0;
     pthread_t *tid;
     tArgs *args;
-
+    
+    // recebe da linha de comando o tamanho das matrizes e quantas threads devem ser utilizadas
     GET_TIME(inicio);
     if(argc < 3){
         printf("Digite %s <dimensao da matriz> <numero de threads>\n", argv[0]);
@@ -58,7 +61,8 @@ int main(int argc, char* argv[]){
     if(dim < nthreads){
         nthreads = dim;
     }
-
+    
+    // aloca memoria para as matrizes
     matrizA = (float *)malloc(sizeof(float) * dim * dim);
     matrizB = (float *)malloc(sizeof(float) * dim * dim);
     matrizResposta = (float *)malloc(sizeof(float) * dim * dim);
@@ -67,7 +71,7 @@ int main(int argc, char* argv[]){
         return 2;
     }
 
-    //inicializa as matrizes
+    // inicializa as matrizes
     for(i = 0; i < dim; i++){
         for(j = 0; j < dim; j++){
             matrizA[i * dim + j] = 1;
@@ -79,7 +83,8 @@ int main(int argc, char* argv[]){
     delta = fim - inicio;
     total += delta;
     printf("Tempo de inicializacao: %lf\n", delta);
-
+    
+    // aloca memoria para as estruturas de dados
     GET_TIME(inicio);
     tid = (pthread_t *)malloc(sizeof(pthread_t) * nthreads);
     args = (tArgs *)malloc(sizeof(tArgs) * nthreads);
@@ -87,7 +92,8 @@ int main(int argc, char* argv[]){
         puts("Erro na alocação de memória para as estruturas.");
         return 2;
     }
-
+    
+    // cria as threads a serem utilizadas pelo programa
     for(i = 0; i < nthreads; i++){
         (args + i)->id = i;
         (args + i)->dim = dim;
@@ -96,7 +102,8 @@ int main(int argc, char* argv[]){
             return 3;
         }
     }
-
+    
+    // faz o programa esperar o termino de todas as threads antes de finalizar
     for(i = 0; i < nthreads; i++){
         pthread_join(*(tid + i), NULL);
     }
@@ -105,15 +112,15 @@ int main(int argc, char* argv[]){
     total += delta;
     printf("Tempo de multiplicacao: %lf\n", delta);
 
+    // comando para printar as matrizes | descomente para conferir a multiplicacao
     // puts("MatrizA:");
     // mostraMatriz(matrizA, dim);
-
     // puts("MatrizB:");
     // mostraMatriz(matrizB, dim);
-
     // puts("Resposta da multiplicacao:");
     // mostraMatriz(matrizResposta, dim);
-
+    
+    // libera a memoria alocada
     GET_TIME(inicio);
     free(matrizA);
     free(matrizB);
